@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb Price Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static' ,filename='css/style.css')}}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#">home</a></li>
+                <li><a href="{{url_for('pricing')}}" onclick="showsection('pricing')">pricing</a></li>
+                <li><a href="{{url_for('portfolio')}}" onclick="showsection('portfolio')">portfolio</a></li>
+                <li><a href="{{url_for('contact')}}" onclick="showsection('contact')">contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Airbnb</h1>
+            <p>Airbnb price prediction using machine learning</p>
+          <button><a href="{{url_for('predict')}}" onclick="showsection('predict')" class="btn">Click here for predict</a></button>  
+        </div>
+    </section>
+    <section class="features">
+        <div class="feature">
+            <span class="icon">😊</span>
+            <p>5000 Happy Clients</p>
+        </div>
+        <div class="feature">
+            <span class="icon">🏨</span>
+            <p>150 Hotels</p>
+        </div>
+        <div class="feature">
+            <span class="icon">⏳</span>
+            <p>15 Years of experience</p>
+        </div>
+        <div class="feature">
+            <span class="icon">🏆</span>
+            <p>22 Awards</p>
+        </div>
+    </section>
+    <section class="about">
+        <p>Airbnb is a popular online marketplace and hospitality service that allows people to rent or lease short-term lodging in residential properties.</p>
+    </section>
+</body>
+</html>

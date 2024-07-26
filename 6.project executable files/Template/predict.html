@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbnb predict Forecasting</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        input[type="text"], select {
+            width: calc(100% - 16px); /* Adjust for border width */
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            display: none; /* Initially hidden */
+        }
+
+        .result h2 {
+            margin-top: 0;
+            color: #007bff;
+        }
+
+        .result p {
+            margin-top: 5px;
+            color: #666;
+        }
+
+        .dynamic-values {
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .dynamic-values h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Airbnb Predict Forecasting</h1>
+        
+        <form id="pricingForm">
+            <label for="property_type">Property Type:</label>
+            <input type="text" id="property_type" name="property_type" placeholder="Property_Type" required>
+            
+            <label for="room_type">Room Type:</label>
+            <select id="room_type" name="room_type" required>
+                <option value="Entire home/apt">Entire home/apt</option>
+                <option value="Private room">Private room</option>
+                <option value="Shared room">Shared room</option>
+            </select>
+
+            <label for="Hotel">Hotel:</label>
+            <input type="text" id="Hotel" name="Hotel" placeholder="Hotel" required>
+
+            <label for="accommodates">Accommodates:</label>
+            <input type="text" id="accommodates" name="accommodates" placeholder="Number of people" required>
+            
+            <label for="cancellation_policy">Cancellation Policy:</label>
+            <input type="text" id="cancellation_policy" name="cancellation_policy" placeholder="Cancellation Policy" required>
+
+            <label for="latitude">latitude:</label>
+            <input type="text" id="latitude" name="latitude" placeholder="latitude" required>
+
+            <label for="Longitude">Longitude:</label>
+            <input type="text" id="Longitude" name="Longitude" placeholder="Longitude" required>
+
+            <label for="cleaning_fee">Cleaning Fee:</label>
+            <input type="text" id="cleaning_fee" name="cleaning_fee" placeholder="Cleaning Fee" required>
+            
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" placeholder="City" required>
+            
+            <label for="host_identity_verified">Host Identity Verified:</label>
+            <input type="text" id="host_identity_verified" name="host_identity_verified" placeholder="Host Identity Verified" required>
+            
+            <label for="instant_bookable">Instant Bookable:</label>
+            <input type="text" id="instant_bookable" name="instant_bookable" placeholder="Instant Bookable" required>
+
+            <label for="number_of_reviews">Number of Reviews:</label>
+            <input type="text" id="number_of_reviews" name="number_of_reviews" placeholder="Number of Reviews" required>
+            
+            <label for="bedrooms">Bedrooms:</label>
+            <input type="text" id="bedrooms" name="bedrooms" placeholder="Number of bedrooms" required>
+            
+            <input type="submit" value="Predict Price">
+        </form>
+
+        <div class="dynamic-values">
+            <h3>Dynamic Calculated Values:</h3>
+            <p id="dynamicNumber">-</p>
+        </div>
+
+        <div class="result" id="predictionResult">
+            <h2>Predicted Price</h2>
+            <p id="predictedPrice">-</p>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('pricingForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Gather form data
+            const formData = new FormData(document.getElementById('pricingForm'));
+
+            // Convert FormData to JSON object
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            // Calculate dynamic number based on form input
+            const dynamicNumber = calculateDynamicNumber(jsonData);
+
+            // Display dynamic number to user
+            const dynamicNumberElement = document.getElementById('dynamicNumber');
+            dynamicNumberElement.textContent = Dynamic Number: ${dynamicNumber};
+
+            // Add dynamic number to JSON data
+            jsonData['dynamic_number'] = dynamicNumber;
+
+            // Send POST request to backend API
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display predicted price
+                const resultContainer = document.getElementById('predictionResult');
+                const predictedPriceElement = document.getElementById('predictedPrice');
+                predictedPriceElement.textContent = $${data.predicted_price.toFixed(2)};
+                resultContainer.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error scenario (e.g., show error message to user)
+            });
+        });
+
+        // Function to calculate dynamic number based on form data
+        function calculateDynamicNumber(formData) {
+            // Example: Calculate a dynamic number based on form data
+            const accommodates = parseInt(formData['accommodates']);
+            const cleaningFee = parseFloat(formData['cleaning_fee']);
+            const numberOfReviews = parseInt(formData['number_of_reviews']);
+            const bedrooms = parseInt(formData['bedrooms']);
+            
+            // Example calculation (replace with actual ML model integration)
+            const dynamicNumber = accommodates * 10 + cleaningFee * 0.5 + numberOfReviews * 2 + bedrooms * 15;
+            
+            return dynamicNumber;
+        }
+    </script>
+</body>
+</html>
